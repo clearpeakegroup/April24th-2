@@ -1,0 +1,28 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "FinRL Monitoring",
+    "panels": [
+      {
+        "type": "gauge",
+        "title": "Training Progress",
+        "targets": [{"expr": "training_progress"}],
+        "gridPos": {"x": 0, "y": 0, "w": 8, "h": 6}
+      },
+      {
+        "type": "graph",
+        "title": "Queue Length",
+        "targets": [{"expr": "queue_length"}],
+        "gridPos": {"x": 8, "y": 0, "w": 8, "h": 6}
+      },
+      {
+        "type": "graph",
+        "title": "Trade Latency",
+        "targets": [{"expr": "trade_latency_seconds"}],
+        "gridPos": {"x": 0, "y": 6, "w": 16, "h": 6}
+      }
+    ],
+    "schemaVersion": 30,
+    "version": 1
+  }
+} 
