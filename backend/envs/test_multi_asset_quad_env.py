@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from envs.multi_asset_quad_env import MultiAssetQuadEnv
+from backend.envs.multi_asset_quad_env import MultiAssetQuadEnv
 
 def test_env_smoke():
     env = MultiAssetQuadEnv()

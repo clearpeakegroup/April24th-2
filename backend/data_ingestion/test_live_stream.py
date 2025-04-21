@@ -2,7 +2,7 @@ import asyncio
 import json
 import pytest
 from unittest.mock import AsyncMock, patch, MagicMock
-from data_ingestion import live_stream
+from backend.data_ingestion import live_stream
 
 @pytest.mark.asyncio
 async def test_ingest_live_ticks(monkeypatch):

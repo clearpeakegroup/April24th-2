@@ -5,6 +5,10 @@ import zstandard as zstd
 from loguru import logger
 from typing import List
 from pathlib import Path
+from backend.models.tick_event import TickEvent
+from backend.models import SessionLocal, IngestionAudit
+from sqlalchemy.exc import IntegrityError
+from io import StringIO
 
 CREDENTIALS_PATH = os.path.expanduser("~/.config/finrl/credentials.json")
 
@@ -43,7 +47,7 @@ def load_zstd_dbn(file_path: str) -> pd.DataFrame:
         with dctx.stream_reader(fh) as reader:
             data = reader.read()
             # Assume CSV inside for this example
-            df = pd.read_csv(pd.compat.StringIO(data.decode("utf-8")))
+            df = pd.read_csv(StringIO(data.decode("utf-8")))
     # Ensure schema
     for col in SCHEMA:
         if col not in df.columns:
@@ -51,3 +55,52 @@ def load_zstd_dbn(file_path: str) -> pd.DataFrame:
     df = df[SCHEMA]
     logger.info(f"Loaded {len(df)} rows from {file_path}")
     return df 
+
+def batch_ingest_to_db(df, version=1, user=None, source="unknown"):
+    """
+    Ingests a DataFrame of tick data into the database with deduplication, versioning, and audit logging.
+    """
+    session = SessionLocal()
+    try:
+        # Deduplicate: only insert if not already present (by ts_event, instrument, exchange, type, version)
+        new_records = []
+        for row in df.to_dict(orient="records"):
+            exists = session.query(TickEvent).filter_by(
+                ts_event=row["ts_event"],
+                instrument=row["instrument"],
+                exchange=row["exchange"],
+                type=row["type"],
+                version=version
+            ).first()
+            if not exists:
+                new_records.append(TickEvent(
+                    ts_event=row["ts_event"],
+                    instrument=row["instrument"],
+                    side=row["side"],
+                    price=row["price"],
+                    size=row["size"],
+                    exchange=row["exchange"],
+                    type=row["type"],
+                    version=version
+                ))
+        session.add_all(new_records)
+        session.commit()
+        status = "success"
+        message = f"Inserted {len(new_records)} new records."
+    except Exception as e:
+        session.rollback()
+        status = "fail"
+        message = str(e)
+    finally:
+        # Audit log
+        audit = IngestionAudit(
+            user=user,
+            source=source,
+            record_count=len(df),
+            status=status,
+            message=message
+        )
+        session.add(audit)
+        session.commit()
+        session.close()
+    return status, message 

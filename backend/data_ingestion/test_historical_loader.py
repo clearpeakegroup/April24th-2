@@ -2,7 +2,7 @@ import io
 import pandas as pd
 import zstandard as zstd
 import pytest
-from data_ingestion import historical_loader
+from backend.data_ingestion import historical_loader
 
 def test_load_zstd_dbn(monkeypatch, tmp_path):
     # Create a fake CSV

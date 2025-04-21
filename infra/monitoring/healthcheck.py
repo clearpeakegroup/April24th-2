@@ -3,6 +3,7 @@ import requests
 import redis
 import psycopg2
 import os
+from loguru import logger
 
 def check_system():
     print(f"CPU: {psutil.cpu_percent()}%")
@@ -13,17 +14,17 @@ def check_redis(url):
     try:
         r = redis.Redis.from_url(url)
         r.ping()
-        print("Redis: OK")
+        logger.info("Redis: OK")
     except Exception as e:
-        print(f"Redis: FAIL ({e})")
+        logger.error(f"Redis: FAIL ({e})")
 
 def check_postgres(host, port, user, password, db):
     try:
         conn = psycopg2.connect(host=host, port=port, user=user, password=password, dbname=db)
         conn.close()
-        print("Postgres: OK")
+        logger.info("Postgres: OK")
     except Exception as e:
-        print(f"Postgres: FAIL ({e})")
+        logger.error(f"Postgres: FAIL ({e})")
 
 def check_databento():
     # Stub: Replace with real API check

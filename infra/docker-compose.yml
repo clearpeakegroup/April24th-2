@@ -1,40 +1,17 @@
-version: '3.9'
+
 services:
-  app:
-    build: .
-    container_name: finrl-app
-    ports:
-      - "7860:7860" # Gradio default
-    environment:
-      - NVIDIA_VISIBLE_DEVICES=all
+  api:
+    build: ..
+  gradio:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      args:
+        GRADIO_VERSION: 4.44.1
+      target: gradio
     depends_on:
-      - redis
-      - postgres
-    volumes:
-      - ../backend:/workspace/backend
-      - ../frontend:/workspace/frontend
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
-  redis:
-    image: redis:7
-    container_name: finrl-redis
+      - api
+    container_name: infra-gradio-1
+    restart: unless-stopped
     ports:
-      - "6379:6379"
-  postgres:
-    image: postgres:15
-    container_name: finrl-postgres
-    environment:
-      POSTGRES_USER: finrl
-      POSTGRES_PASSWORD: finrlpass
-      POSTGRES_DB: finrl_db
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-volumes:
-  pgdata: 
+      - "7860:7860"

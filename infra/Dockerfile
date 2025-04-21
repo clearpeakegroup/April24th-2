@@ -1,40 +1,16 @@
-FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu24.04
+FROM python:3.10-slim AS gradio
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    wget \
-    git \
-    bzip2 \
-    ca-certificates \
-    libglib2.0-0 \
-    libxext6 \
-    libsm6 \
-    libxrender1 \
-    sudo \
-    && rm -rf /var/lib/apt/lists/*
+ARG GRADIO_VERSION
+ENV PYTHONDONTWRITEBYTECODE=1
 
-# Install Miniconda
-ENV CONDA_DIR /opt/conda
-RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
-    bash ~/miniconda.sh -b -p $CONDA_DIR && \
-    rm ~/miniconda.sh && \
-    $CONDA_DIR/bin/conda clean -tipsy && \
-    ln -s $CONDA_DIR/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
-    echo ". $CONDA_DIR/etc/profile.d/conda.sh" >> ~/.bashrc && \
-    echo "conda activate base" >> ~/.bashrc
-ENV PATH=$CONDA_DIR/bin:$PATH
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential \
+  && rm -rf /var/lib/apt/lists/*
 
-# Copy environment.yml
-COPY ../backend/environment.yml /tmp/environment.yml
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt \
+ && pip install --no-cache-dir gradio==$GRADIO_VERSION
 
-# Create the environment
-RUN conda env create -f /tmp/environment.yml && conda clean -a
+COPY . .
 
-# Set the default environment
-ENV CONDA_DEFAULT_ENV=finrl-backend
-ENV PATH /opt/conda/envs/finrl-backend/bin:$PATH
-
-# Set workdir
-WORKDIR /workspace
-
-CMD ["/bin/bash"] 
+CMD ["python3", "-u", "frontend/gradio_app.py"]

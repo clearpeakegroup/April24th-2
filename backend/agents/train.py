@@ -8,6 +8,7 @@ from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3.common.callbacks import EvalCallback
 from envs.multi_asset_quad_env import MultiAssetQuadEnv
 from data_ingestion.historical_loader import load_zstd_dbn
+from loguru import logger
 
 # Enable GPU memory growth for TensorFlow (if used)
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -16,7 +17,7 @@ if gpus:
         for gpu in gpus:
             tf.config.experimental.set_memory_growth(gpu, True)
     except Exception as e:
-        print(f"TF GPU memory growth error: {e}")
+        logger.warning(f"TF GPU memory growth error: {e}")
 
 def make_env(instruments):
     def _init():
@@ -40,7 +41,7 @@ def main():
     # Load historical data (stub: not used in env yet)
     if args.data:
         df = load_zstd_dbn(args.data)
-        print(f"Loaded data: {df.shape}")
+        logger.info(f"Loaded data: {df.shape}")
 
     # Instantiate environment
     env = DummyVecEnv([make_env(args.instruments)])
@@ -64,7 +65,7 @@ def main():
     # Train
     model.learn(total_timesteps=args.timesteps, callback=eval_callback)
     model.save(os.path.join(args.modeldir, f"{args.algo}_final"))
-    print(f"Model saved to {args.modeldir}")
+    logger.info(f"Model saved to {args.modeldir}")
 
 if __name__ == "__main__":
     main() 

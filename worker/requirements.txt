@@ -1,0 +1,6 @@
+rq
+aioredis
+pytest
+pytest-asyncio
+hypothesis
+pandas 

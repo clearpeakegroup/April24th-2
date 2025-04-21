@@ -1,8 +1,8 @@
 import redis
 import json
 import logging
-from execution.broker_connector import ETradeBrokerConnector
-from execution.risk_manager import RiskManager
+from backend.execution.broker_connector import ETradeBrokerConnector
+from backend.execution.risk_manager import RiskManager
 
 class Executor:
     def __init__(self, redis_url: str, broker: ETradeBrokerConnector, risk_manager: RiskManager):

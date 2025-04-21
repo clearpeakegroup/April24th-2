@@ -1,0 +1,16 @@
+[Unit]
+Description=FinRL Frontend React Service
+After=network.target
+
+[Service]
+User=clearpeakegroup
+WorkingDirectory=/home/clearpeakegroup/finrl-platform/frontend-ui
+ExecStart=/usr/bin/npm run dev -- --host
+Restart=on-failure
+RestartSec=5
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=finrl-frontend
+
+[Install]
+WantedBy=multi-user.target 

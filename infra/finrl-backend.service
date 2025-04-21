@@ -1,0 +1,18 @@
+[Unit]
+Description=FinRL Backend FastAPI Service
+After=network.target
+
+[Service]
+User=clearpeakegroup
+WorkingDirectory=/home/clearpeakegroup/finrl-platform/backend
+ExecStart=/home/clearpeakegroup/finrl-platform/.venv/bin/uvicorn backend.api:app --host 0.0.0.0 --port 8000
+Restart=on-failure
+RestartSec=5
+Environment=DATABASE_URL=postgresql+psycopg2://finrl:finrlpass@localhost:5432/finrl_db
+Environment=REDIS_URL=redis://localhost:6379/0
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=finrl-backend
+
+[Install]
+WantedBy=multi-user.target 

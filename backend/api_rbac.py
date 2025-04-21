@@ -1,8 +1,13 @@
+import os
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 import jwt
 
-SECRET_KEY = "dev-secret"
+SECRET_KEY = os.getenv("JWT_SECRET_KEY", "dev-secret")
+if SECRET_KEY == "dev-secret":
+    import warnings
+    warnings.warn("Using default JWT secret key! Set JWT_SECRET_KEY in production.")
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
 
 ROLES = {

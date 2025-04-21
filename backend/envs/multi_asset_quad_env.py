@@ -2,6 +2,7 @@ import gymnasium as gym
 import numpy as np
 from gymnasium import spaces
 from typing import List, Dict, Any
+from loguru import logger
 
 # Placeholder for LNN-based feature extractor
 class LNNFeatureExtractor:
@@ -62,5 +63,5 @@ class MultiAssetQuadEnv(gym.Env):
         return obs, reward, terminated, truncated, info
 
     def render(self, mode="human"):
-        print(f"Step: {self.current_step}")
+        logger.info(f"Step: {self.current_step}")
         # Add more visualization as needed 
