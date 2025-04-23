@@ -1,35 +1,6 @@
-# Python junk
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-
-# Environment
-.env
+# ignore local Python venvs
 .venv/
-venv/
-env/
-*.env
-
-# System files
-.DS_Store
-*.swp
-
-# Jupyter
-.ipynb_checkpoints
-
-# Cache
+# Byte-code, logs, caches
+**/__pycache__/
+*.py[cod]
 *.log
-*.tmp
-*.cache/
-*.gz
-*.zip
-
-# Large binaries and model artifacts
-*.pt
-*.pth
-*.h5
-*.ckpt
-
-# Cursor AI files
-.cursor/

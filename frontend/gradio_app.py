@@ -202,14 +202,14 @@ with gr.Blocks() as demo:
                     gr.Markdown("### Forward Test")
                     date_start = gr.Textbox(label='Start date YYYY‑MM‑DD')
                     date_end   = gr.Textbox(label='End date YYYY‑MM‑DD')
-                    date_range = [date_start, date_end]  # alias to satisfy downstream code
                     fwd_start = gr.Button("Start Forward Test")
                     fwd_stop = gr.Button("Stop")
                     fwd_progress = gr.Progress()
                     fwd_status = gr.Textbox(label="Status", interactive=False)
                     fwd_job_id = gr.State("")
                     
-                    async def start_forward(date_range):
+                    async def start_forward(date_start, date_end):
+                        date_range = [date_start, date_end]
                         req = {
     "type": "forward",
     "params": {
@@ -229,7 +229,7 @@ with gr.Blocks() as demo:
                             fwd_status.update(d.get("msg", ""))
                         return job_id, "Started"
                     fwd_start.click(
-    start_forward, date_range, [
+    start_forward, [date_start, date_end], [
         fwd_job_id, fwd_status])
 
                     async def stop_forward(job_id):
@@ -276,6 +276,18 @@ if __name__ == "__main__":
     import sys
     if "--headless" in sys.argv:
         print("Running on http://localhost:7860")
-        demo.queue().launch(server_name="0.0.0.0", server_port=7860, share=False, show_api=False, inbrowser=False)
+        demo.queue().launch(
+            server_name="0.0.0.0",
+            server_port=7860,
+            share=False,
+            show_api=False,
+            inbrowser=False
+        )
     else:
-        demo.queue().launch()
+        demo.queue().launch(
+            server_name="0.0.0.0",
+            server_port=7860,
+            share=False,
+            show_api=False,
+            inbrowser=False
+        )
