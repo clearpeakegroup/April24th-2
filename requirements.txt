@@ -26,3 +26,5 @@ torchdiffeq
 gradio==3.41.2
 anyio==3.6.2
 gradio_client<1.0.0
+websockets
+httpx

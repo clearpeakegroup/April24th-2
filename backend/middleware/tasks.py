@@ -2,6 +2,18 @@ from .celery_app import celery_app
 from backend.agents.registry import AGENT_REGISTRY
 import random
 import time
+from backend.data_ingestion.sentiment_feature_pipeline import run_sentiment_feature_pipeline
+from dotenv import load_dotenv
+import torch
+from transformers import AutoTokenizer, AutoModelForSequenceClassification, Trainer, TrainingArguments
+import pyarrow.parquet as pq
+import glob
+import os
+
+load_dotenv()
+BERT_MODEL = os.getenv("BERT_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
+FEATURE_BASE = os.getenv("SENTIMENT_FEATURE_BASE", "data/lake/parquet/features/sentiment")
+BERT_OUT_PATH = os.getenv("BERT_OUT_PATH", "models/news_bert_minilm_quant.pt")
 
 def get_agent_from_params(params):
     agent_type = params.get("agent_type", "ppo")
@@ -42,4 +54,45 @@ def run_live_execution(params):
     agent.load(params.get("model_path", f"models/{params.get('agent_type', 'ppo')}_latest.pt"))
     # Implement live execution logic using agent.act()
     # result = agent.live_execute()  # Implement as needed
-    return {"status": "completed", "params": params} 
+    return {"status": "completed", "params": params}
+
+@celery_app.task(name="features.sentiment_pipeline")
+def sentiment_feature_pipeline_task():
+    import asyncio
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(run_sentiment_feature_pipeline())
+
+@celery_app.task(name="train_news_bert")
+def train_news_bert_task(params=None):
+    # Load latest parquet features
+    parquet_files = sorted(glob.glob(f"{FEATURE_BASE}/**/*.parquet", recursive=True), reverse=True)
+    if not parquet_files:
+        return {"status": "error", "msg": "No sentiment parquet found"}
+    table = pq.read_table(parquet_files[0])
+    df = table.to_pandas()
+    texts = df.get("headline", "") + " " + df.get("body", "")
+    labels = df.get("sentiment", 0)
+    # Tokenize
+    tokenizer = AutoTokenizer.from_pretrained(BERT_MODEL)
+    encodings = tokenizer(list(texts), truncation=True, padding=True)
+    class NewsDataset(torch.utils.data.Dataset):
+        def __init__(self, encodings, labels):
+            self.encodings = encodings
+            self.labels = labels
+        def __getitem__(self, idx):
+            item = {key: torch.tensor(val[idx]) for key, val in self.encodings.items()}
+            item["labels"] = torch.tensor(self.labels.iloc[idx])
+            return item
+        def __len__(self):
+            return len(self.labels)
+    dataset = NewsDataset(encodings, labels)
+    # Model
+    model = AutoModelForSequenceClassification.from_pretrained(BERT_MODEL, num_labels=1)
+    # Training
+    args = TrainingArguments(output_dir="/tmp/bert_out", per_device_train_batch_size=32, num_train_epochs=1, logging_steps=10, save_steps=1000, fp16=True)
+    trainer = Trainer(model=model, args=args, train_dataset=dataset)
+    trainer.train()
+    # Quantize
+    model = torch.quantization.quantize_dynamic(model, {torch.nn.Linear}, dtype=torch.qint8)
+    torch.save(model.state_dict(), BERT_OUT_PATH)
+    return {"status": "completed", "model_path": BERT_OUT_PATH, "num_samples": len(df)} 

@@ -133,6 +133,64 @@ with gr.Blocks() as demo:
             settings_sidebar()
         with gr.Column(scale=4):
             with gr.Tabs():
+                with gr.Tab("Ingest"):
+                    gr.Markdown("### Data Ingestion")
+                    dataset = gr.Textbox(label="Dataset", placeholder="e.g. ES_tick")
+                    asset = gr.Textbox(label="Asset (optional)", placeholder="e.g. ES")
+                    file = gr.File(label="Upload File", file_types=[".csv", ".jsonl", ".json", ".zst"])
+                    ingest_btn = gr.Button("Start Ingestion")
+                    log = gr.Dataframe(headers=["Log"], datatype=["str"], interactive=False, label="Ingestion Log")
+                    progress = gr.Progress()
+                    compact_btn = gr.Button("Compact now")
+                    from_date = gr.Textbox(label="From (YYYY-MM-DD)")
+                    to_date = gr.Textbox(label="To (YYYY-MM-DD)")
+                    download_btn = gr.Button("Download Parquet")
+                    download_file = gr.File(label="Download Output")
+
+                    async def start_ingest(file, dataset, asset):
+                        if not file or not dataset:
+                            return [["Please provide both file and dataset name."]]
+                        files = {"file": (file.name, file)}
+                        data = {"dataset": dataset, "asset": asset}
+                        async with httpx.AsyncClient() as client:
+                            r = await client.post(f"{API_URL}/jobs/ingest", files=files, data=data)
+                            r.raise_for_status()
+                            job_id = r.json()["job_id"]
+                        logs = []
+                        while True:
+                            await asyncio.sleep(1)
+                            async with httpx.AsyncClient() as client:
+                                resp = await client.get(f"{API_URL}/jobs/log/{job_id}")
+                                resp.raise_for_status()
+                                logs = resp.json()
+                            if logs and logs[-1].endswith("complete."):
+                                break
+                        return [[l] for l in logs]
+
+                    ingest_btn.click(
+                        start_ingest,
+                        inputs=[file, dataset, asset],
+                        outputs=[log],
+                    )
+
+                    async def compact(dataset, from_date):
+                        if not dataset or not from_date:
+                            return
+                        async with httpx.AsyncClient() as client:
+                            await client.post(f"{API_URL}/jobs/compact", params={"dataset": dataset, "date": from_date})
+                    compact_btn.click(compact, inputs=[dataset, from_date], outputs=[])
+
+                    async def download(dataset, from_date, to_date):
+                        if not dataset or not from_date or not to_date:
+                            return None
+                        async with httpx.AsyncClient() as client:
+                            resp = await client.get(f"{API_URL}/datasets/{dataset}/download", params={"from": from_date, "to": to_date}, timeout=None)
+                            out_path = f"{dataset}_{from_date}_{to_date}.parquet.zst"
+                            with open(out_path, "wb") as f:
+                                async for chunk in resp.aiter_bytes():
+                                    f.write(chunk)
+                        return out_path
+                    download_btn.click(download, inputs=[dataset, from_date, to_date], outputs=[download_file])
                 with gr.Tab("Dashboard"):
                     jobs_table = gr.Dataframe(headers=["ID", "Type", "Status", "% Complete"], datatype=["str", "str", "str", "number"], interactive=False, label="Jobs")
                     pl_chart = gr.LinePlot(x="Time", y="PnL", title="P/L Over Time", overlay_point=True, interactive=False)

@@ -17,10 +17,7 @@ RUN if [ -f pyproject.toml ]; then \
       pip install poetry && poetry install --no-root; \
     else \
       pip install --no-cache-dir -r requirements.txt; \
-    fi && \
-      pip install poetry && poetry install --no-root; \
-    else \
-      pip install --no-cache-dir -r requirements.txt; \
+    fi
 
 # 3. source code
 COPY . .

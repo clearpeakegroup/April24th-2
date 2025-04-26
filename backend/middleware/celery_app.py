@@ -17,6 +17,7 @@ celery_app.conf.update(
         Queue("forwardtest"),
         Queue("retrain"),
         Queue("liveexec"),
+        Queue("features"),
     ],
     worker_prefetch_multiplier=8,  # Tune for throughput
     broker_transport_options={
@@ -30,4 +31,7 @@ celery_app.conf.update(
             "timeout": 10.0
         }
     },
+    task_routes={
+        'features.sentiment_pipeline': {'queue': 'features'},
+    }
 ) 
