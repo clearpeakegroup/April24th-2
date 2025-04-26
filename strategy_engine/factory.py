@@ -5,8 +5,8 @@ from .head4_crossvol import StrategyHead as Head4
 from .head5_macroregime import StrategyHead as Head5
 from .head6_intraday import StrategyHead as Head6
 from .head7_riskparity import StrategyHead as Head7
-from .head8_hypersearch import StrategyHead as Head8
-from .head9_volpivot import StrategyHead as Head9
+from .head8_vol_arb import StrategyHead as Head8
+from .head9_calendar import StrategyHead as Head9
 from .head10_news_trigger import StrategyHead as Head10
 
 def get_active_heads(stage: str, with_options: bool):

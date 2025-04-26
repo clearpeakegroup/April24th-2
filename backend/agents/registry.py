@@ -5,6 +5,8 @@ from trader_core.strategies.fut_only.a2c_agent import A2CAgent
 from trader_core.strategies.fut_only.lnn_agent import LNNAgent
 from trader_core.strategies.fut_only.lnn_drl_hybrid import LNNDQNHybridAgent
 from strategy_engine.head10_news_trigger import StrategyHead as Head10
+from strategy_engine.head8_vol_arb import StrategyHead as Head8
+from strategy_engine.head9_calendar import StrategyHead as Head9
 # Add more as implemented
 
 def get_strategies(cfg):
@@ -18,6 +20,8 @@ AGENT_REGISTRY = {
     "lnn": LNNAgent,
     "lnn_dqn_hybrid": LNNDQNHybridAgent,
     "head10_news_trigger": Head10,
+    "head8_vol_arb": Head8,
+    "head9_calendar": Head9,
     # ...
 }
 
