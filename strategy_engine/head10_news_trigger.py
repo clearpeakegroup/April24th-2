@@ -5,6 +5,7 @@ from .base import BaseStrategy, BacktestResult, Progress
 from .utils import Order, calc_pnl, apply_slippage
 from transformers import AutoTokenizer, AutoModel
 import numpy as np
+from backend.agents.base_agent import get_device
 
 class LiquidODEGate(torch.nn.Module):
     def __init__(self, input_dim, hidden_dim=32):
@@ -23,7 +24,7 @@ class StrategyHead(BaseStrategy):
         self.bert_model = None
         self.tokenizer = None
         self.gate = None
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = get_device()
         self._load_models()
     def _load_models(self):
         self.tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")

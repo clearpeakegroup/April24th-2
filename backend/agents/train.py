@@ -9,6 +9,7 @@ from stable_baselines3.common.callbacks import EvalCallback
 from envs.multi_asset_quad_env import MultiAssetQuadEnv
 from data_ingestion.historical_loader import load_zstd_dbn
 from loguru import logger
+from backend.agents.base_agent import get_device
 
 # Enable GPU memory growth for TensorFlow (if used)
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -53,7 +54,7 @@ def main():
         env,
         verbose=1,
         tensorboard_log=args.logdir,
-        device="cuda" if torch.cuda.is_available() else "cpu"
+        device=get_device()
     )
 
     # Optional: periodic evaluation

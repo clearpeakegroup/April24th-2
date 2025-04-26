@@ -1,11 +1,12 @@
 import ray
 from backend.agents.registry import AGENT_REGISTRY
+from backend.agents.base_agent import get_device
 import torch
 
 @ray.remote(num_gpus=1)
 def train_agent(agent_name, config, env_config):
     agent_cls = AGENT_REGISTRY[agent_name]
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = get_device()
     agent = agent_cls(env_config, device=device, **config)
     agent.train()
     eval_score = agent.evaluate()

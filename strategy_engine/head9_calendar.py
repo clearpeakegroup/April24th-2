@@ -3,6 +3,7 @@ from typing import Iterable, Iterator, AsyncIterable, AsyncIterator
 from .base import BaseStrategy, BacktestResult, Progress
 from .utils import Order, calc_pnl, apply_slippage
 import numpy as np
+from backend.agents.base_agent import get_device
 
 class StrategyHead(BaseStrategy):
     def _signal(self, spread):

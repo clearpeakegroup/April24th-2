@@ -1,10 +1,11 @@
 import ray
 from ray import tune
 from backend.agents.registry import AGENT_REGISTRY
+from backend.agents.base_agent import get_device
 
 def trainable(config):
     agent_cls = AGENT_REGISTRY[config['agent_name']]
-    agent = agent_cls(config['env_config'], device="cuda", **config)
+    agent = agent_cls(config['env_config'], device=get_device(), **config)
     agent.train()
     return {"score": agent.evaluate()}
 
