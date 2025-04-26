@@ -33,5 +33,21 @@ celery_app.conf.update(
     },
     task_routes={
         'features.sentiment_pipeline': {'queue': 'features'},
+    },
+    beat_schedule={
+        'nightly-train-news-bert': {
+            'task': 'train_news_bert',
+            'schedule': 24*60*60,  # every 24h
+            'options': {'expires': 3600},
+            'args': (),
+            'relative': False,
+        },
+        'nightly-tag-model': {
+            'task': 'tag_model_nightly',
+            'schedule': 24*60*60,  # every 24h
+            'options': {'expires': 3600},
+            'args': (),
+            'relative': False,
+        },
     }
 ) 

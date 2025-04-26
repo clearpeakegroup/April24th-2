@@ -9,11 +9,18 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification, Trai
 import pyarrow.parquet as pq
 import glob
 import os
+import boto3
+from github import Github
+from datetime import datetime
+from loguru import logger
 
 load_dotenv()
 BERT_MODEL = os.getenv("BERT_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
 FEATURE_BASE = os.getenv("SENTIMENT_FEATURE_BASE", "data/lake/parquet/features/sentiment")
 BERT_OUT_PATH = os.getenv("BERT_OUT_PATH", "models/news_bert_minilm_quant.pt")
+S3_BUCKET = os.getenv("S3_BUCKET")
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+GITHUB_REPO = os.getenv("GITHUB_REPO")
 
 def get_agent_from_params(params):
     agent_type = params.get("agent_type", "ppo")
@@ -95,4 +102,29 @@ def train_news_bert_task(params=None):
     # Quantize
     model = torch.quantization.quantize_dynamic(model, {torch.nn.Linear}, dtype=torch.qint8)
     torch.save(model.state_dict(), BERT_OUT_PATH)
-    return {"status": "completed", "model_path": BERT_OUT_PATH, "num_samples": len(df)} 
+    return {"status": "completed", "model_path": BERT_OUT_PATH, "num_samples": len(df)}
+
+@celery_app.task(name="tag_model_nightly")
+def tag_model_nightly():
+    tag = datetime.utcnow().strftime("%Y%m%d_nightly")
+    s3_key = f"models/{tag}.pt"
+    # Upload to S3
+    try:
+        s3 = boto3.client("s3")
+        s3.upload_file(BERT_OUT_PATH, S3_BUCKET, s3_key)
+        logger.info(f"Uploaded model to S3: {S3_BUCKET}/{s3_key}")
+    except Exception as e:
+        logger.error(f"S3 upload failed: {e}")
+        return {"status": "error", "msg": str(e)}
+    # GitHub release
+    try:
+        g = Github(GITHUB_TOKEN)
+        repo = g.get_repo(GITHUB_REPO)
+        release = repo.create_git_release(tag, tag, f"Nightly model {tag}")
+        with open(BERT_OUT_PATH, "rb") as f:
+            release.upload_asset(BERT_OUT_PATH, name=f"{tag}.pt")
+        logger.info(f"Created GitHub release: {tag}")
+    except Exception as e:
+        logger.error(f"GitHub release failed: {e}")
+        return {"status": "error", "msg": str(e)}
+    return {"status": "completed", "tag": tag} 
