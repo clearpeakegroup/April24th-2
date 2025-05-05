@@ -1,0 +1,27 @@
+services:
+  finrl_service:
+    image: finrl_service:latest          # already built GPU image
+    build:
+      context: ./finrl_service
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+      - PYTHONPATH=/shared:/app
+    network_mode: host
+    ipc: host
+    volumes:
+      - ./shared:/shared:ro
+    cpuset: "0-3"
+
+  execution_service:
+    build:
+      context: ./execution_service
+    command: env PYTHONPATH=/shared:/app python /app/action_server.py
+    environment:
+      - PYTHONPATH=/shared:/app
+    network_mode: host
+    ipc: host
+    volumes:
+      - ./shared:/shared:ro
+    cpuset: "4-7"

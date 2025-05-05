@@ -1,0 +1,24 @@
+# syntax=docker/dockerfile:1.4
+FROM nvidia/cuda:11.8.0-runtime-ubuntu22.04
+ENV PYTHONUNBUFFERED=1
+
+    PYTHONUNBUFFERED=1 \
+    apt-get install -y --no-install-recommends \
+        build-essential swig git libffi-dev libzmq3-dev && \
+RUN --mount=type=cache,target=/root/.cache/pip python3 -m pip install --no-cache-dir --upgrade "pip==23.3.1"
+RUN --mount=type=cache,target=/root/.cache/pip python3 -m pip install --no-cache-dir --no-deps "git+https://github.com/AI4Finance-Foundation/FinRL@v0.3.5#egg=FinRL"
+WORKDIR /app
+COPY . /app
+EXPOSE 8000
+CMD ["uvicorn", "backend.api:app", "--host", "0.0.0.0", "--port", "8000"]
+# --- FinRL 0.3.5 (no deps) + latest ccxt ---
+RUN --mount=type=cache,target=/root/.cache/pip python3 -m pip install --no-cache-dir --no-deps \
+    git+https://github.com/AI4Finance-Foundation/FinRL@v0.3.5#egg=FinRL
+RUN --mount=type=cache,target=/root/.cache/pip python3 -m pip install --no-cache-dir ccxt
+# --- Torch CUDA 11.8 ---
+RUN --mount=type=cache,target=/root/.cache/pip \
+    python3 -m pip install --no-cache-dir \
+    torch==2.0.1+cu118 \
+    --index-url https://download.pytorch.org/whl/cu118
+# --- Latest ccxt ---
+    python3 -m pip install --no-cache-dir ccxt

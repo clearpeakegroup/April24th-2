@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cdo]
+*.log
+.env
+.git
+.vscode
+.idea
+tests/
+*.ipynb
+*.csv
+*.zst
+*.parquet
+*.h5
+*.db
+*.sqlite
+*.pkl
+*.npz

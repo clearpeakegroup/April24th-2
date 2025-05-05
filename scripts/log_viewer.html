@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>FinRL Build Progress</title>
+  <meta http-equiv="refresh" content="10">
+  <style>
+    body { font-family: monospace; background: #111; color: #eee; }
+    pre { white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h2>FinRL Build Progress Log</h2>
+  <pre id="log"></pre>
+  <script>
+    function fetchLog() {
+      fetch('great_search_repair_loop.log')
+        .then(response => response.text())
+        .then(text => { document.getElementById('log').textContent = text; });
+    }
+    fetchLog();
+    setInterval(fetchLog, 10000);
+  </script>
+  <p>Auto-refreshes every 10 seconds.</p>
+</body>
+</html>

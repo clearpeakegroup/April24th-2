@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=FinRL Platform
+Comment=Launch the full FinRL multi-asset trading platform (backend, services, GUI)
+Exec=gnome-terminal -- bash -c 'cd ~/finrl-platform && ./launch_finrl_platform.sh && cd frontend && python3 gradio_app.py; echo; echo "Press Enter to close..."; read'
+Icon=utilities-terminal
+Terminal=true
+Categories=Finance;Application;
+StartupNotify=true
+Path=/home/clearpeakegroup/finrl-platform 

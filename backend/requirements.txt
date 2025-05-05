@@ -1,0 +1,41 @@
+# DO NOT REMOVE: All dependencies must be pinned and kept in sync with Docker builds and root requirements.txt.
+# If you add or update a package, check for transitive dependencies and version conflicts.
+# All builds must pass `pip check` and update requirements.lock after a successful build.
+# See requirements.lock for the exact versions used in production.
+# CORE, PROVEN, STABLE VERSIONS FOR APRIL24TH SUPERLIQUID
+finrl==0.3.4                # Last stable for SB3 1.7.0 and gym 0.21.0
+stable-baselines3==1.7.0    # Compatible with finrl 0.3.4
+gym==0.21.0                 # SB3 pin (needs pip 23.3.1)
+gymnasium==0.26.3           # Used by FinRL, but not by SB3
+torch==2.0.1+cu118          # CUDA 11.8 wheel
+numpy==1.26.4
+pandas==2.2.3
+scikit-learn==1.3.0
+ccxt==3.1.47
+matplotlib==3.7.2
+# Add only proven, compatible extras below
+fastapi==0.110.2
+uvicorn[standard]==0.29.0
+psycopg2-binary==2.9.9
+redis==5.0.4
+python-dotenv==1.0.1
+pydantic==2.11.4
+PyJWT==2.10.1
+ray==2.45.0
+celery==5.3.6
+httpx==0.27.0
+prometheus_client==0.21.1
+pyarrow==20.0.0
+sqlalchemy==2.0.30
+# torch is installed with CUDA support via the official PyTorch wheel index in the Dockerfile
+# See backend/Dockerfile for the exact torch version and CUDA variant
+# cvxpylayers==0.1.9
+# alpaca-trade-api==3.1.0
+# exchange-calendars==4.3
+# stockstats==0.4.1
+# setuptools==59.5.0
+# aiohttp==3.8.2
+# --- FinRL required dependencies ---
+# FinRL and ccxt are now installed via Dockerfile, not here
+# Remove any old pins or duplicate entries
+pyzmq==26.0.3

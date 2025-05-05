@@ -1,0 +1,2 @@
+ts_event,instrument,side,price,size,exchange,type
+1,ABC,buy,100,10,NYSE,trade

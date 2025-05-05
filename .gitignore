@@ -1,0 +1,20 @@
+*.tar.gz
+.build-cache/
+.venv/
+*.dbn.zst
+# Python
+__pycache__/
+*.py[cod]
+*.so
+# Editor & env
+.vscode/
+.idea/
+.wheelhouse_venv/
+wheelhouse/
+# Logs
+*.log
+logs/
+# Docker leftovers
+docker_build.log
+build.log
+*.bak

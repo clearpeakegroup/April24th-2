@@ -1,0 +1,5 @@
+# DO NOT REMOVE: All dependencies must be pinned and kept in sync with Docker builds and root requirements.txt.
+# If you add or update a package, check for transitive dependencies and version conflicts.
+# All builds must pass `pip check` and update requirements.lock after a successful build.
+# See requirements.lock for the exact versions used in production.
+gradio==4.26.0

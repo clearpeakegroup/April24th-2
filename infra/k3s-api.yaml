@@ -1,0 +1,55 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: finrl-backend
+spec:
+  replicas: 1
+  strategy:
+    blueGreen:
+      activeService: finrl-backend-active
+      previewService: finrl-backend-preview
+      autoPromotionEnabled: true
+  selector:
+    matchLabels:
+      app: finrl-backend
+  template:
+    metadata:
+      labels:
+        app: finrl-backend
+    spec:
+      containers:
+      - name: finrl-backend
+        image: finrl-backend:latest
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "1Gi"
+          limits:
+            cpu: "2"
+            memory: "4Gi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: finrl-backend-active
+spec:
+  selector:
+    app: finrl-backend
+  ports:
+  - protocol: TCP
+    port: 8000
+    targetPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: finrl-backend-preview
+spec:
+  selector:
+    app: finrl-backend
+  ports:
+  - protocol: TCP
+    port: 8000
+    targetPort: 8000 

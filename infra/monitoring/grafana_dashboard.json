@@ -1,0 +1,58 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "FinRL Monitoring",
+    "panels": [
+      {
+        "type": "gauge",
+        "title": "Training Progress",
+        "targets": [{"expr": "training_progress"}],
+        "gridPos": {"x": 0, "y": 0, "w": 8, "h": 6}
+      },
+      {
+        "type": "graph",
+        "title": "Queue Length",
+        "targets": [{"expr": "queue_length"}],
+        "gridPos": {"x": 8, "y": 0, "w": 8, "h": 6}
+      },
+      {
+        "type": "graph",
+        "title": "Trade Latency",
+        "targets": [{"expr": "trade_latency_seconds"}],
+        "gridPos": {"x": 0, "y": 6, "w": 16, "h": 6}
+      },
+      {
+        "type": "gauge",
+        "title": "Sharpe Ratio",
+        "targets": [{"expr": "sharpe_ratio"}],
+        "gridPos": {"x": 0, "y": 12, "w": 4, "h": 6}
+      },
+      {
+        "type": "gauge",
+        "title": "Sortino Ratio",
+        "targets": [{"expr": "sortino_ratio"}],
+        "gridPos": {"x": 4, "y": 12, "w": 4, "h": 6}
+      },
+      {
+        "type": "gauge",
+        "title": "Fee %",
+        "targets": [{"expr": "fee_pct"}],
+        "gridPos": {"x": 8, "y": 12, "w": 4, "h": 6}
+      },
+      {
+        "type": "gauge",
+        "title": "Maker Fill %",
+        "targets": [{"expr": "maker_fill_pct"}],
+        "gridPos": {"x": 12, "y": 12, "w": 4, "h": 6}
+      },
+      {
+        "type": "graph",
+        "title": "Realised Tax",
+        "targets": [{"expr": "realised_tax"}],
+        "gridPos": {"x": 0, "y": 18, "w": 16, "h": 6}
+      }
+    ],
+    "schemaVersion": 30,
+    "version": 2
+  }
+} 

@@ -1,0 +1,26 @@
+
+0:
+  actor: 0
+  regime: "MKT-MM"
+  edge: "Tight spread, high replenish"
+  stance: "Aggressive take for scalps"
+1:
+  actor: 1
+  regime: "TOXIC-FLO"
+  edge: "High cancel/add, adverse selection"
+  stance: "Stand-aside; widen stop"
+2:
+  actor: 2
+  regime: "BLOCK-TREND"
+  edge: "Large size, low cancel"
+  stance: "Ride with trend until volume dries (time stop 2 min)"
+3:
+  actor: 3
+  regime: "GAMMA-PIN"
+  edge: "Mean-reversion, dampened vol"
+  stance: "Provide liquidity – place passive bids/asks"
+4:
+  actor: 4
+  regime: "FED-FLOW"
+  edge: "One-way pressure but scheduled"
+  stance: "Fade after 30 % of daily quota prints"

@@ -1,0 +1,7 @@
+stages:
+  train:
+    options_enabled: true
+  forward:
+    options_enabled: false
+  live:
+    options_enabled: false

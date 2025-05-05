@@ -1,0 +1,26 @@
+services:
+  execution_service:
+    volumes:
+      - type: bind
+        source: ./shared
+        target: /shared
+        read_only: true
+      - type: bind
+        source: .
+        target: /workspace
+        read_only: true
+    environment:
+      PYTHONPATH: "/workspace:/shared:/app"
+
+  finrl_service:
+    volumes:
+      - type: bind
+        source: ./shared
+        target: /shared
+        read_only: true
+      - type: bind
+        source: .
+        target: /workspace
+        read_only: true
+    environment:
+      PYTHONPATH: "/workspace:/shared:/app"

@@ -1,0 +1,68 @@
+name: Release Candidate
+
+on:
+  push:
+    tags:
+      - 'v1.*'
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Run Docker Compose
+        run: |
+          docker-compose -f infra/docker-compose.yml up -d
+          sleep 10
+      - name: Run smoke test
+        run: bash scripts/smoke_test.sh
+
+  build-and-push:
+    needs: smoke-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Log in to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build backend Docker image with cache and push
+        run: |
+          docker buildx create --use
+          docker buildx build --target backend \
+            --cache-from type=gha \
+            --cache-to type=gha,mode=max \
+            --push \
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/finrl-backend:latest \
+            -f backend/Dockerfile backend
+      - name: Build and push Docker images
+        run: |
+          docker-compose -f infra/docker-compose.yml build
+          docker-compose -f infra/docker-compose.yml push
+
+  release:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Generate changelog
+        id: changelog
+        run: |
+          echo "CHANGELOG<<EOF" >> $GITHUB_ENV
+          git log $(git describe --tags --abbrev=0 HEAD^)..HEAD --oneline >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: ${{ env.CHANGELOG }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 

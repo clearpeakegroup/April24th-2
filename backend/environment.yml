@@ -1,0 +1,18 @@
+name: finrl-backend
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - cudatoolkit=11.8
+  - pytorch=2.0.1
+  - torchvision=0.15.2
+  - tensorflow
+  - gymnasium
+  - zstandard
+  - pip
+  - pip:
+      - gradio>=3.41.2
+      - stable-baselines3
+      - torchaudio
+# FinRL and ccxt are now installed via Dockerfile, not here 
