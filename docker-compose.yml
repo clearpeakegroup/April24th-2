@@ -1,27 +1,33 @@
 services:
   finrl_service:
-    image: finrl_service:latest          # already built GPU image
+    image: finrl_service:latest # already built GPU image
     build:
-      context: ./finrl_service
+      context: .
+      dockerfile: finrl_service/Dockerfile
     runtime: nvidia
-    environment:
-      - NVIDIA_VISIBLE_DEVICES=all
-      - NVIDIA_DRIVER_CAPABILITIES=all
-      - PYTHONPATH=/shared:/app
-    network_mode: host
-    ipc: host
     volumes:
       - ./shared:/shared:ro
+      - ./shared:/shared:ro
+    environment:
+      PYTHONPATH: "/shared:/app"
+    network_mode: host
+    ipc: host
     cpuset: "0-3"
-
+    command:
+      - /usr/bin/python3
+      - /app/finrl_service/rl_agent_tick_sub.py
   execution_service:
     build:
-      context: ./execution_service
-    command: env PYTHONPATH=/shared:/app python /app/action_server.py
-    environment:
-      - PYTHONPATH=/shared:/app
-    network_mode: host
-    ipc: host
+      context: .
+      dockerfile: execution_service/Dockerfile
     volumes:
       - ./shared:/shared:ro
+      - ./shared:/shared:ro
+    environment:
+      PYTHONPATH: "/shared:/app"
+    command:
+      - python
+      - /app/execution_service/action_server.py
+    network_mode: host
+    ipc: host
     cpuset: "4-7"
