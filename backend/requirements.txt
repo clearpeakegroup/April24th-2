@@ -40,7 +40,7 @@ gradio_client==1.8.0
 groovy==0.1.2
 grpcio @ file:///home/conda/feedstock_root/build_artifacts/grpc-split_1660349691591/work
 gymnasium @ file:///home/conda/feedstock_root/build_artifacts/gymnasium-split_1732344929811/work
-h11==0.14.0
+h11==0.16.0
 h2 @ file:///home/conda/feedstock_root/build_artifacts/h2_1738578511449/work
 h5py @ file:///home/conda/feedstock_root/build_artifacts/h5py_1687263074382/work
 hpack @ file:///home/conda/feedstock_root/build_artifacts/hpack_1737618293087/work
