@@ -29,7 +29,7 @@ FinRL==0.3.7
 flatbuffers @ file:///home/conda/feedstock_root/build_artifacts/python-flatbuffers_1617723079010/work
 fonttools==4.57.0
 frozenlist @ file:///home/conda/feedstock_root/build_artifacts/frozenlist_1737645236190/work
-fsspec==2025.3.2
+fsspec==2025.5.1
 gast @ file:///home/conda/feedstock_root/build_artifacts/gast_1596839682936/work
 gmpy2 @ file:///home/conda/feedstock_root/build_artifacts/gmpy2_1733462536562/work
 google-auth @ file:///home/conda/feedstock_root/build_artifacts/google-auth_1744688154288/work
