@@ -44,7 +44,7 @@ h11==0.14.0
 h2 @ file:///home/conda/feedstock_root/build_artifacts/h2_1738578511449/work
 h5py @ file:///home/conda/feedstock_root/build_artifacts/h5py_1687263074382/work
 hpack @ file:///home/conda/feedstock_root/build_artifacts/hpack_1737618293087/work
-httpcore==1.0.8
+httpcore==1.0.9
 httpx==0.28.1
 huggingface-hub==0.30.2
 hyperframe @ file:///home/conda/feedstock_root/build_artifacts/hyperframe_1737618333194/work
