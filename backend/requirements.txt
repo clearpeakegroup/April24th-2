@@ -122,7 +122,7 @@ tensorflow @ file:///home/conda/feedstock_root/build_artifacts/tensorflow-split_
 tensorflow-estimator @ file:///home/conda/feedstock_root/build_artifacts/tensorflow-split_1658190775029/work/tensorflow-estimator/wheel_dir/tensorflow_estimator-2.9.0-py2.py3-none-any.whl
 termcolor @ file:///home/conda/feedstock_root/build_artifacts/termcolor_1743676967121/work
 tomlkit==0.13.2
-torch==2.6.0
+torch==2.7.0
 torchaudio==2.6.0
 torchvision @ file:///workspace/croot/torchvision_1693425165028/work
 tqdm==4.67.1
