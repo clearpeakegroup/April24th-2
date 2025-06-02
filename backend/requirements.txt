@@ -79,7 +79,7 @@ nvidia-nvjitlink-cu12==12.4.127
 nvidia-nvtx-cu12==12.4.127
 oauthlib @ file:///home/conda/feedstock_root/build_artifacts/oauthlib_1733752848439/work
 opt_einsum @ file:///home/conda/feedstock_root/build_artifacts/opt_einsum_1733687912731/work
-orjson==3.10.16
+orjson==3.10.18
 packaging @ file:///home/conda/feedstock_root/build_artifacts/packaging_1733203243479/work
 pandas==2.2.3
 Pillow @ file:///home/conda/feedstock_root/build_artifacts/pillow_1675487172403/work
